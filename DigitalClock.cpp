@@ -16,7 +16,7 @@ DigitalClock::DigitalClock(QWidget *parent)
     timer->start(40);
 
     setWindowTitle(tr("Digital Clock"));
-    resize(m_startW, m_startH);
+    resize(m_startW * 1.15, m_startH * 1.23);
     loadPreference();
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -25,16 +25,25 @@ DigitalClock::DigitalClock(QWidget *parent)
 
 void DigitalClock::paintEvent(QPaintEvent *)
 {
-    // ... ストップウォッチ処理 ...
-    m_currentTime = displayTime();
-
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    double scaleX = double(width()) / m_startW;
-    double scaleY = double(height()) / m_startH;
-    double scale = qMin(scaleX, scaleY) * 0.94;
+    m_currentTime = displayTime();
+
+    const double realW = m_startW;
+    const double realH = m_startH;
+    QRect rect = contentsRect();
+
+    // ウィンドウに対して、どれくらいの倍率で描けるか計算
+    double scale = qMin(rect.width() / realW, rect.height() / realH) * 0.94;
+
+    // 余白を計算して半分にする（これで中央に寄る）
+    double tx = (rect.width() - (realW * scale)) / 2.0;
+    double ty = (rect.height() - (realH * scale)) / 2.0;
+
+    painter.translate(tx, ty);
     painter.scale(scale, scale);
+
     drawDigital(painter);
 }
 
@@ -52,7 +61,7 @@ void DigitalClock::wheelEvent(QWheelEvent *event)
 {
     // 1. 現在のアスペクト比を計算、または固定値を定義
     // デジタル時計なら「幅3 : 高さ1」くらいが収まりが良いです
-    const double aspectRatio = 3.0 / 1.0;
+    const double aspectRatio = 3.75 / 1.0;
 
     // 2. 変化量を計算
     int delta = event->angleDelta().y() > 0 ? 20 : -20;
@@ -189,37 +198,36 @@ void DigitalClock::savePreference()
 void DigitalClock::drawDigital(QPainter &painter)
 {
     painter.save();
-
-    // ウィンドウの左上からのマージンを直接指定（ここで隙間を追い込めます）
-    const int marginLeft = 10;
-    const int marginTop = 20;
-    painter.translate(marginLeft, marginTop);
+    painter.translate(0, 0); // 左上起点
 
     QString s = m_currentTime.toString("HHmmss");
+    if (s.length() < 6)
+        return;
 
-    for (int i = 0; i < 6; ++i) {
+    bool showColon = m_currentTime.second() % 2 == 0; // 1秒ごとに点滅させるなら
+
+    for (int i = 0; i < s.length(); ++i) {
         int val = s[i].digitValue();
         QColor c = (i < 2) ? m_hourColor : (i < 4) ? m_minuteColor : m_secondsColor;
 
-        painter.save();
-
-        // --- ここでドロップシャドウ（影）の描画 ---
-        // わずかに右下にずらして、非常に薄い色で背景セグメントを描く
+        // --- 数字の描画 (影 + 本体) ---
+        // 影
         painter.save();
         painter.translate(2, 2);
-        drawSegment(painter, 8, QColor(0, 0, 0, 40)); // 常に「8」を描いて全セグメントの影にする
+        drawSegment(painter, 8, QColor(0, 0, 0, 40));
         painter.restore();
-
-        // 本体の描画
+        // 本体
         drawSegment(painter, val, c);
 
-        painter.restore();
+        // --- 次の桁への移動 ---
+        painter.translate(70, 0); // 数字1個分の送り幅
 
-        // 次の桁へ移動（送り幅）
-        painter.translate(70, 0);
+        // --- コロンの挿入箇所 (2桁目と4桁目の後) ---
         if (i == 1 || i == 3) {
-            // コロンの描画処理など
-            painter.translate(30, 0);
+            if (showColon) {
+                drawColon(painter, c); // コロンを描画する関数
+            }
+            painter.translate(30, 0); // コロン用のスペース分移動[cite: 2]
         }
     }
     painter.restore();

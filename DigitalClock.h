@@ -52,10 +52,8 @@ private:
     QColor m_minuteColor;
     QColor m_secondsColor;
     int m_colorPattern;
-
     const double m_startW = 470.0;
-    const double m_startH = 100.0;
-
+    const double m_startH = 124.0;
     QTime m_currentTime;
     QTime m_stopwatchElapsed;
     QElapsedTimer m_elapsedTimer;
