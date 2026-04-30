@@ -19,6 +19,6 @@
 
 ## スクリーンショット
 
-![Screenshot Windows](doc/Screenshot_Windows.png)
+![Screenshot Windows](doc/ScreenShot_Windows.png)
 
-![Screenshot Ubuntu](doc/Screenshot_Ubuntu.png)
+![Screenshot Ubuntu](doc/ScreenShot_Ubuntu.png)
