@@ -59,20 +59,10 @@ void DigitalClock::mousePressEvent(QMouseEvent *event)
 
 void DigitalClock::wheelEvent(QWheelEvent *event)
 {
-    // 1. 現在のアスペクト比を計算、または固定値を定義
-    // デジタル時計なら「幅3 : 高さ1」くらいが収まりが良いです
     const double aspectRatio = 3.75 / 1.0;
-
-    // 2. 変化量を計算
     int delta = event->angleDelta().y() > 0 ? 20 : -20;
-
-    // 3. 新しい幅を決定（最小幅を制限）
     int newWidth = qMax(200, width() + delta);
-
-    // 4. 幅に合わせて高さを算出
     int newHeight = static_cast<int>(newWidth / aspectRatio);
-
-    // 5. リサイズ実行
     resize(newWidth, newHeight);
 }
 
@@ -84,7 +74,7 @@ void DigitalClock::mouseDoubleClickEvent(QMouseEvent *event)
 void DigitalClock::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
-
+#if 0
     if (m_isStopwatchMode) {
         if (m_isRunning) {
             menu.addAction("Stop", this, &DigitalClock::stopStopwatch);
@@ -97,8 +87,8 @@ void DigitalClock::contextMenuEvent(QContextMenuEvent *event)
     } else {
         menu.addAction("Stopwatch Mode", this, &DigitalClock::startStopwatch);
     }
-
     menu.addSeparator();
+#endif
     menu.addAction("Light/Dark", this, [this]() { reverseColor(); });
     menu.addSeparator();
     menu.addAction("Quit", qApp, &QCoreApplication::quit);
@@ -198,13 +188,13 @@ void DigitalClock::savePreference()
 void DigitalClock::drawDigital(QPainter &painter)
 {
     painter.save();
-    painter.translate(0, 0); // 左上起点
+    painter.translate(0, 0);
 
     QString s = m_currentTime.toString("HHmmss");
     if (s.length() < 6)
         return;
 
-    bool showColon = m_currentTime.second() % 2 == 0; // 1秒ごとに点滅させるなら
+    bool showColon = m_currentTime.second() % 2 == 0;
 
     for (int i = 0; i < s.length(); ++i) {
         int val = s[i].digitValue();

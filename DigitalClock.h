@@ -47,7 +47,6 @@ protected:
     void drawSegment(QPainter &painter, int digit, const QColor &color);
 
 private:
-
     QColor m_hourColor;
     QColor m_minuteColor;
     QColor m_secondsColor;
