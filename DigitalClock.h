@@ -4,11 +4,9 @@
 
 #pragma once
 
-#include <QElapsedTimer>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QPainter>
-#include <QPainterPath>
 #include <QSettings>
 #include <QTime>
 #include <QTimer>
@@ -23,7 +21,10 @@ class DigitalClock : public QWidget
     Q_OBJECT
 
 public:
+    enum SecondsMode { None, HalfSize, FullSize };
+
     DigitalClock(QWidget *parent = nullptr);
+    void startApplication();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -34,10 +35,6 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
     QTime displayTime() const;
-    void startStopwatch();
-    void stopStopwatch();
-    void resetStopwatch();
-    void switchToClockMode();
     void reverseColor(int pattern = -1);
     void loadPreference();
     void savePreference();
@@ -47,15 +44,36 @@ protected:
     void drawSegment(QPainter &painter, int digit, const QColor &color);
 
 private:
+    void updateWindowSize();
+
+    int m_colorPattern;
     QColor m_hourColor;
     QColor m_minuteColor;
     QColor m_secondsColor;
-    int m_colorPattern;
-    const double m_startW = 470.0;
-    const double m_startH = 124.0;
+
+    SecondsMode m_secondsMode;
+    double m_baseScale;
+
+    double m_sw;
+    double m_st;
+    double m_g;
+    double m_digitMargin;
+
+    // 【完全確定】1文字分の送り幅
+    double getStepX() const { return 70.0 + m_digitMargin; }
+
+    // 【完全確定】時分(4文字)が純粋に占める右端までの幅
+    // (3文字分の送り ＋ コロンの送り ＋ 最後の4文字目自体の幅)
+    double getBaseW() const
+    {
+        double singleDigitW = 50.0 + m_st;
+        double colonW = 30.0 + m_digitMargin * 0.5;
+        return (getStepX() * 3) + colonW + singleDigitW;
+    }
+
+    // 【完全確定】セグメントの縦幅
+    double getBaseH() const { return 50.0 * 2 + m_st + 2.0 * 4; }
+
     QTime m_currentTime;
-    QTime m_stopwatchElapsed;
-    QElapsedTimer m_elapsedTimer;
-    bool m_isStopwatchMode = false;
-    bool m_isRunning = false;
+    QTimer *m_timer;
 };

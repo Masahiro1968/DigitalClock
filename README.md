@@ -10,11 +10,14 @@
 
 * **移動**: 任意の場所を左クリックしてドラッグすると、時計を移動できます。
 * **サイズ変更**: マウスホイールを使用して UI の拡大・縮小が可能です。
+* **セグメントサイズ変更**: Shift+Ctrl+マウスホイールを使用して セグメントサイズの拡大・縮小が可能です。
+* **セグメント間サイズ変更**: Ctrl+マウスホイールを使用して セグメント間のサイズの拡大・縮小が可能です。
+* **秒セグメントのサイズ変更**: 任意の場所を右クリックすると、秒のサイズ変更メニューが表示されます。
 * **色反転**: 任意の場所を右クリックすると、色の反転メニューが表示されます。
 
 ## 技術詳細
 
-* **フレームワーク**: Qt 6.11 (Linux), Qt 6.8 (Windows)
+* **フレームワーク**: Qt 6.11 (Linux), Qt 6.11 (Windows)
 * **グラフィックス**: アンチエイリアスを効かせた QPainter と `WA_TranslucentBackground` を使用。
 
 ## スクリーンショット
@@ -22,3 +25,21 @@
 ![Screenshot Windows](doc/ScreenShot_Windows.png)
 
 ![Screenshot Ubuntu](doc/ScreenShot_Ubuntu.png)
+
+Default View(秒はハーフサイズ)<br>
+![Screenshot Ubuntu](doc/ScreenShot01.png)
+
+Reverse View<br>
+![Screenshot Ubuntu](doc/ScreenShot02.png)
+
+セグメントサイズを小さくした場合<br>
+![Screenshot Ubuntu](doc/ScreenShot03.png)
+
+セグメントサイズを大きくした場合<br>
+![Screenshot Ubuntu](doc/ScreenShot04.png)
+
+秒の表示をフルサイズにした場合<br>
+![Screenshot Ubuntu](doc/ScreenShot05.png)
+
+秒のサイズをなしにした場合<br>
+![Screenshot Ubuntu](doc/ScreenShot06.png)
